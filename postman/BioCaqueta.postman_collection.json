@@ -1,0 +1,151 @@
+{
+  "info": {
+    "name": "BioCaquetá | API REST",
+    "description": "Colección para probar el taller BioCaquetá. Ejecuta POST antes de PUT/DELETE para guardar avistamientoId.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Listar todos (GET)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/avistamientos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "avistamientos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "02 - Filtrar aves (GET)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/avistamientos?categoria=Ave",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "avistamientos"
+          ],
+          "query": [
+            {
+              "key": "categoria",
+              "value": "Ave"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "03 - Crear avistamiento (POST)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.collectionVariables.set(\"avistamientoId\", data._id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombreComun\": \"Danta amazónica\",\n  \"nombreCientifico\": \"Tapirus terrestris\",\n  \"categoria\": \"Mamífero\",\n  \"zona\": \"El Caraño\",\n  \"estadoConservacion\": \"Vulnerable\",\n  \"investigador\": \"Estudiante de Ingeniería de Sistemas\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/avistamientos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "avistamientos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "04 - Actualizar zona y conservación (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"zona\": \"Río Hacha\",\n  \"estadoConservacion\": \"En peligro\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/avistamientos/{{avistamientoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "avistamientos",
+            "{{avistamientoId}}"
+          ]
+        }
+      }
+    },
+    {
+      "name": "05 - Eliminar avistamiento (DELETE)",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/api/avistamientos/{{avistamientoId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "avistamientos",
+            "{{avistamientoId}}"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "avistamientoId",
+      "value": ""
+    }
+  ]
+}

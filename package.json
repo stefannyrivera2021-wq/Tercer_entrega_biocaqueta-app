@@ -1,0 +1,17 @@
+{
+  "name": "biocaqueta-app",
+  "version": "1.0.0",
+  "description": "Sistema de monitoreo de biodiversidad y avistamientos - BioCaquetá",
+  "type": "module",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "express-handlebars": "^8.0.1",
+    "mongoose": "^9.0.0"
+  }
+}

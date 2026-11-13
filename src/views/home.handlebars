@@ -1,0 +1,165 @@
+<section id="registro" class="section" aria-labelledby="registro-title">
+  <h1 class="section-title" id="registro-title">Registrar un avistamiento</h1>
+
+  <form method="POST" action="/api/avistamientos" class="form-grid">
+    <div class="field">
+      <label for="nombreComun">Nombre común <span class="req">*</span></label>
+      <input id="nombreComun" name="nombreComun" placeholder="Ej. Danta amazónica" required>
+    </div>
+    <div class="field">
+      <label for="nombreCientifico">Nombre científico <span class="req">*</span></label>
+      <input id="nombreCientifico" name="nombreCientifico" placeholder="Ej. Tapirus terrestris" required>
+    </div>
+    <div class="field">
+      <label for="categoria">Categoría <span class="req">*</span></label>
+      <select id="categoria" name="categoria" required>
+        <option value="" disabled selected>Seleccione una categoría</option>
+        {{#each categorias}}<option value="{{this}}">{{this}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="field">
+      <label for="zona">Zona <span class="req">*</span></label>
+      <input id="zona" name="zona" placeholder="Ej. El Caraño" list="zonas-sugeridas" autocomplete="off" required>
+      <datalist id="zonas-sugeridas">
+        {{#each zonas}}<option value="{{this}}"></option>{{/each}}
+      </datalist>
+    </div>
+    <div class="field">
+      <label for="estadoConservacion">Estado de conservación <span class="req">*</span></label>
+      <select id="estadoConservacion" name="estadoConservacion" required>
+        {{#each estados}}<option value="{{valor}}">{{valor}}</option>{{/each}}
+      </select>
+    </div>
+    <div class="field">
+      <label for="investigador">Investigador <span class="req">*</span></label>
+      <input id="investigador" name="investigador" placeholder="Ej. Ana Rodríguez" required>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a1 1 0 0 1 1-2z"/><path d="M8 3v5h7V3"/><rect x="7" y="13" width="10" height="8" rx="1"/></svg>
+        Guardar avistamiento
+      </button>
+    </div>
+  </form>
+</section>
+
+<section id="consulta" class="section section-divided" aria-labelledby="listado-title">
+  <h2 class="section-title" id="listado-title">Avistamientos registrados</h2>
+
+  <div class="list-card">
+  {{#if total}}
+    <div class="pulse" aria-label="Termómetro de conservación">
+      <div class="pulse-head">
+        <span class="pulse-title">Termómetro de conservación</span>
+        {{#if enPeligro}}<span class="pulse-alert">⚠ {{enPeligro}} en peligro</span>{{/if}}
+      </div>
+      <div class="pulse-bar">
+        {{#each conservacion}}
+          <span class="pulse-seg seg-{{clase}}" style="flex-grow: {{cantidad}}" title="{{valor}}: {{cantidad}}"></span>
+        {{/each}}
+      </div>
+      <div class="pulse-legend">
+        {{#each conservacion}}
+          <button type="button" class="legend-item" data-estado="{{valor}}" aria-pressed="false">
+            <i class="dot dot-{{clase}}"></i>{{valor}} <b>{{cantidad}}</b> <small>({{porcentaje}}%)</small>
+          </button>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  <label class="search">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+    <input type="search" id="buscar" placeholder="Buscar en los avistamientos" aria-label="Buscar en los avistamientos">
+  </label>
+
+  <div class="chips" role="group" aria-label="Filtrar por categoría">
+    <button type="button" class="chip is-active" data-categoria="">Todas <b>{{total}}</b></button>
+    {{#each conteoCategorias}}
+      <button type="button" class="chip" data-categoria="{{nombre}}">{{nombre}} <b>{{cantidad}}</b></button>
+    {{/each}}
+  </div>
+
+  {{#if total}}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre común</th><th>Nombre científico</th><th>Categoría</th><th>Zona</th>
+            <th>Estado de conservación</th><th>Investigador</th><th>Fecha</th><th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-avistamientos">
+          {{#each avistamientos}}
+            <tr data-categoria="{{categoria}}" data-estado="{{estadoConservacion}}" data-texto="{{textoBusqueda}}">
+              <td>{{nombreComun}}</td>
+              <td><em>{{nombreCientifico}}</em></td>
+              <td>{{categoria}}</td>
+              <td>{{zona}}</td>
+              <td><span class="badge badge-{{estadoClase}}">{{estadoConservacion}}</span></td>
+              <td>{{investigador}}</td>
+              <td>{{fechaVisible}}</td>
+              <td>
+                <div class="actions">
+                  <a class="btn-sm btn-edit" href="/editar/{{id}}">Editar</a>
+                  <form action="/api/avistamientos/delete/{{id}}" method="POST"
+                        data-msg="¿Seguro que deseas eliminar «{{nombreComun}}»?"
+                        onsubmit="return confirm(this.dataset.msg);">
+                    <button class="btn-sm btn-delete" type="submit">Eliminar</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {{/each}}
+          <tr class="no-results" hidden><td colspan="8">No hay avistamientos que coincidan con la búsqueda.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="result-count" id="contador">Mostrando {{total}} de {{total}}</p>
+  {{else}}
+    <p class="empty-state">Todavía no hay registros. Completa el formulario para guardar el primero.</p>
+  {{/if}}
+  </div>
+</section>
+
+<script>
+  // Búsqueda instantánea (ignora tildes) + filtros por categoría y estado
+  (() => {
+    const filas = [...document.querySelectorAll('#tabla-avistamientos tr[data-texto]')];
+    if (!filas.length) return;
+    const buscar = document.getElementById('buscar');
+    const contador = document.getElementById('contador');
+    const sinResultados = document.querySelector('.no-results');
+    const chips = document.querySelectorAll('.chip');
+    const leyenda = document.querySelectorAll('.legend-item');
+    let categoria = '';
+    let estado = '';
+    const normalizar = (t) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    function aplicar() {
+      const q = normalizar(buscar.value.trim());
+      let visibles = 0;
+      filas.forEach((f) => {
+        const ok = (!q || normalizar(f.dataset.texto).includes(q))
+          && (!categoria || f.dataset.categoria === categoria)
+          && (!estado || f.dataset.estado === estado);
+        f.hidden = !ok;
+        if (ok) visibles++;
+      });
+      sinResultados.hidden = visibles > 0;
+      contador.textContent = `Mostrando ${visibles} de ${filas.length}`;
+    }
+
+    buscar.addEventListener('input', aplicar);
+    chips.forEach((c) => c.addEventListener('click', () => {
+      categoria = c.dataset.categoria;
+      chips.forEach((x) => x.classList.toggle('is-active', x === c));
+      aplicar();
+    }));
+    leyenda.forEach((l) => l.addEventListener('click', () => {
+      estado = estado === l.dataset.estado ? '' : l.dataset.estado;
+      leyenda.forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.estado === estado)));
+      aplicar();
+    }));
+  })();
+</script>
